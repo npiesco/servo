@@ -1,4 +1,4 @@
-﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
@@ -84,7 +84,7 @@ fn try_python_command(program: &str, args: &[&str]) -> Result<(), String> {
     let mut command = Command::new(program);
     command.args(args);
     command.arg("--version");
-    
+
     let command_result = command.output();
 
     if let Ok(output) = command_result {
@@ -93,12 +93,16 @@ fn try_python_command(program: &str, args: &[&str]) -> Result<(), String> {
         } else {
             Err(format!(
                 "`{} {:?}` failed with {}",
-                program, args,
+                program,
+                args,
                 String::from_utf8_lossy(&output.stderr)
             ))
         };
     }
-    Err(format!("`{} {:?}` failed to run (is it installed?)", program, args))
+    Err(format!(
+        "`{} {:?}` failed to run (is it installed?)",
+        program, args
+    ))
 }
 
 /// Tries to find a suitable python, which in Servo is always `uv run python`.
@@ -109,8 +113,8 @@ fn try_python_command(program: &str, args: &[&str]) -> Result<(), String> {
 /// Note: This function should be kept in sync with the version in `components/servo/build.rs`
 fn find_python() -> Command {
     // Test uv first - if it works, create a FRESH command to return
-    let uv_result = try_python_command("uv", &["run", "python"])
-        .inspect_err(|e| println!("cargo:warning={e}"));
+    let uv_result =
+        try_python_command("uv", &["run", "python"]).inspect_err(|e| println!("cargo:warning={e}"));
     if uv_result.is_ok() {
         let mut cmd = Command::new("uv");
         cmd.args(["run", "python"]);
